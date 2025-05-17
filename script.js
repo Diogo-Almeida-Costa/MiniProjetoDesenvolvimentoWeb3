@@ -1,4 +1,4 @@
-document.addEventListener('CarregarDOM', 
+document.addEventListener('DOMContentLoaded', 
     () => 
     {
         const form = document.getElementById('task-form');
