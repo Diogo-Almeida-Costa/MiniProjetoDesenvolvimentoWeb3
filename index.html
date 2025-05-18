@@ -11,9 +11,9 @@
     <script src="script.js" defer></script>
 
     <div class="container my-5">
-        <h1 class="mb-4"> Lista de Tarefas </h1>
+        <h1 class="mb-4 display-5 text-center text-primary"> Lista de Tarefas </h1>
 
-        <form id="task-form" class="row g-3">
+        <form id="task-form" class="row g-3 mb-4">
             <div class="col-md-6">
                 <label for="title" class="form-label">Título</label>
                 <input type="text" id="title" class="form-control" placeholder="Ex: Ir ao mercado">
@@ -52,7 +52,7 @@
         </form>
 
         <div id="task-list" class="mt-5">
-            <p class="text-muted"> Não há tarefas cadastradas </p>
+            <p id="empty-message" class="text-muted"> Não há tarefas cadastradas </p>
         </div>
 
     </div>
