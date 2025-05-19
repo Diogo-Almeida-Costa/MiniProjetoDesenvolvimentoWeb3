@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded',
         const mensagemVazia = document.getElementById('empty-message');
         let tarefas = [];
         const filtros = document.getElementById('sort-tasks');
+        const btnForm = document.getElementById('form-btn');
+        const btnCancelar = document.getElementById('cancel-edit');
+        const editarId = document.getElementById('edit-id');
 
         const salvo = localStorage.getItem('tarefas');
         tarefas = salvo ? JSON.parse(salvo) : [];
@@ -17,32 +20,50 @@ document.addEventListener('DOMContentLoaded',
             {
                 e.preventDefault();
 
+                const idEdit = editarId.value;
+                const idNum = idEdit ? Number(idEdit) : Date.now();
+                const dataCriada = idEdit ? tarefas.find(t => t.id === idNum).created : new Date().toISOString();
+
                 const tarefa = {
-                    id: Date.now(),
-                    title: document.getElementById('title').value,
+                    id: idNum,
+                    title: document.getElementById('title').value.trim(),
                     date: document.getElementById('date').value,
-                    comment: document.getElementById('comment').value,
+                    comment: document.getElementById('comment').value.trim(),
                     priority: document.getElementById('priority').value,
                     notify: document.getElementById('notify').checked,
-                    created: new Date().toISOString()
+                    created: dataCriada
                 };
 
-                console.log('Tarefa cadastrada: ', tarefa);
 
-                tarefas.push(tarefa);
+                if(idEdit)
+                {
+                    tarefas = tarefas.map(t => t.id === idNum ? tarefa : t);
+                }
+                else
+                {
+                    tarefas.push(tarefa);
+                }
 
-                puxarTarefas();
+                localStorage.setItem('tarefas', JSON.stringify(tarefas));
 
-                form.reset();
+                resetarForm();
+                carregarTarefas();
             }
         );
 
         filtros.addEventListener('change', () => carregarTarefas());
 
-        function puxarTarefas()
+        btnCancelar.addEventListener('click', () => 
         {
-            localStorage.setItem('tarefas', JSON.stringify(tarefas));
-            carregarTarefas();
+            resetarForm();
+        });
+
+        function resetarForm()
+        {
+            form.reset();
+            editarId.value = '';
+            btnForm.textContent = 'Adicionar Tarefa';
+            btnCancelar.style.display = 'none';
         }
 
         function carregarTarefas()
@@ -91,7 +112,7 @@ document.addEventListener('DOMContentLoaded',
                 info.innerHTML = `
                     <h5 class="card-title text-${tarefa.priority}"> ${tarefa.title} </h5>
                     <p class="card-text"><small class="text-muted"> ${tarefa.date || 'Sem data'} </small></p>
-                    <p class="card-text"> ${tarefa.comment || ''} </p>
+                    <p class="card-text"><small class="text-muted"> Priodade da tarefa: ${tarefa.priority} </small></p>
                 `;
 
                 const btnDiv = document.createElement('div');
@@ -100,8 +121,31 @@ document.addEventListener('DOMContentLoaded',
                 btnDelete.className = 'btn btn-outline-danget btn-sm';
                 btnDelete.textContent = 'Remover';
                 btnDelete.addEventListener('click', () => removerTarefa(tarefa.id));
+                const btnDetalhe = document.createElement('button');
+                btnDetalhe.className = 'btn btn-outline-secondary btn-sm';
+                btnDetalhe.textContent = 'Detalhar';
+                btnDetalhe.addEventListener('click', () => 
+                {
+                    window.location.href = `detalhe.html?id=${tarefa.id}`;
+                });
+                const btnEdicao = document.createElement('button');
+                btnEdicao.className = 'btn btn-outline-warning btn-sm';
+                btnEdicao.textContent = 'Editar';
+                btnEdicao.addEventListener('click', () =>
+                {
+                    editarId.value = t.id;
+                    document.getElementById('title').value = t.title;
+                    document.getElementById('date').value = t.date;
+                    document.getElementById('comment').value = t.comment;
+                    document.getElementById('notify').checked = t.notify;
+                    btnForm.textContent = 'Salvar Alterações';
+                    btnCancelar.style.display = 'inline-block';
+                }
+                );
 
+                btnDiv.appendChild(btnDetalhe);
                 btnDiv.appendChild(btnDelete);
+                btnDiv.appendChild(btnEdicao);
                 body.append(info, btnDiv);
                 card.appendChild(body);
                 col.appendChild(card);
@@ -114,7 +158,8 @@ document.addEventListener('DOMContentLoaded',
         function removerTarefa(id)
         {
             tarefas = tarefas.filter(t => t.id !== id);
-            puxarTarefas();
+            localStorage.setItem('tarefas', JSON.stringify(tarefas));
+            carregarTarefas();
         }
     }
 );
