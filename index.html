@@ -51,6 +51,20 @@
             </div>
         </form>
 
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <label for="sort-tasks" class="form-label"> Ordenar Por </label>
+                <select id="sort-tasks" class="form-select">
+                    <option value="createdDesc"> Data criação ↓ </option>
+                    <option value="createdAsc"> Data de criação ↑ </option>
+                    <option value="dueDesc"> Data tarefa ↓ </option>
+                    <option value="dueAsc"> Data tarefa ↑ </option>
+                    <option value="priority"> Prioridade </option>
+                    <option value="alpha"> Título </option>
+                </select>
+            </div>
+        </div>
+
         <div id="task-list" class="mt-5">
             <p id="empty-message" class="text-muted"> Não há tarefas cadastradas </p>
         </div>

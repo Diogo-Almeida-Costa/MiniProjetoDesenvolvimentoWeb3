@@ -5,6 +5,12 @@ document.addEventListener('DOMContentLoaded',
         const listarElementos = document.getElementById('task-list');
         const mensagemVazia = document.getElementById('empty-message');
         let tarefas = [];
+        const filtros = document.getElementById('sort-tasks');
+
+        const salvo = localStorage.getItem('tarefas');
+        tarefas = salvo ? JSON.parse(salvo) : [];
+
+        carregarTarefas();
 
         form.addEventListener('submit',
             (e) =>
@@ -18,23 +24,51 @@ document.addEventListener('DOMContentLoaded',
                     comment: document.getElementById('comment').value,
                     priority: document.getElementById('priority').value,
                     notify: document.getElementById('notify').checked,
+                    created: new Date().toISOString()
                 };
 
                 console.log('Tarefa cadastrada: ', tarefa);
 
                 tarefas.push(tarefa);
 
-                carregarTarefas();
+                puxarTarefas();
 
                 form.reset();
             }
         );
 
+        filtros.addEventListener('change', () => carregarTarefas());
+
+        function puxarTarefas()
+        {
+            localStorage.setItem('tarefas', JSON.stringify(tarefas));
+            carregarTarefas();
+        }
+
         function carregarTarefas()
         {
             listarElementos.innerHTML = '';
 
-            if(tarefas.length === 0)
+            const ordenado = [...tarefas];
+
+            const ordenar = filtros.value;
+
+            ordenado.sort((a, b) => 
+            {
+                switch(ordenar)
+                {
+                    case 'createdAsc': return new Date(a.created) - new Date(b.created);
+                    case 'createdDesc': return new Date(b.created) - new Date(a.created);
+                    case 'dueAsc': return (a.date ? new Date(a.date) : 0) - (b.date ? new Date(b.date) : 0);
+                    case 'dueDesc': return (b.date ? new Date(b.date) : 0) - (a.date ? new Date(a.date) : 0);
+                    case 'priority': return a.priority.localeCompare(b.priority);
+                    case 'alpha': return a.title.localeCompare(b.title);
+                    default: return 0;
+                }
+            }
+            );
+
+            if(ordenado.length === 0)
             {
                 mensagemVazia.style.display = 'block';
                 return;
@@ -42,7 +76,7 @@ document.addEventListener('DOMContentLoaded',
 
             mensagemVazia.style.display = 'none';
 
-            tarefas.forEach(tarefa => 
+            ordenado.forEach(tarefa => 
             {
                 const col = document.createElement('div');
                 col.className = 'col-12 col-md-6';
@@ -72,6 +106,7 @@ document.addEventListener('DOMContentLoaded',
                 card.appendChild(body);
                 col.appendChild(card);
                 listarElementos.appendChild(col);
+                
             }
             );
         }
@@ -79,10 +114,7 @@ document.addEventListener('DOMContentLoaded',
         function removerTarefa(id)
         {
             tarefas = tarefas.filter(t => t.id !== id);
-            carregarTarefas();
+            puxarTarefas();
         }
     }
 );
-
-
-
