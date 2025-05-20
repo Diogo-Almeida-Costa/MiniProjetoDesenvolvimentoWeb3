@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded',
             form.reset();
             editarId.value = '';
             btnForm.textContent = 'Adicionar Tarefa';
-            btnCancelar.style.display = 'none';
         }
 
         function carregarTarefas()
@@ -103,7 +102,7 @@ document.addEventListener('DOMContentLoaded',
                 col.className = 'col-12 col-md-6';
 
                 const card = document.createElement('div');
-                card.className = 'card border-${tarefa.priority} mb-3';
+                card.className = `card border-${tarefa.priority} mb-3`;
 
                 const body = document.createElement('div');
                 body.className = 'card-body d-flex justify-content-between align-items-start';
@@ -133,13 +132,13 @@ document.addEventListener('DOMContentLoaded',
                 btnEdicao.textContent = 'Editar';
                 btnEdicao.addEventListener('click', () =>
                 {
-                    editarId.value = t.id;
-                    document.getElementById('title').value = t.title;
-                    document.getElementById('date').value = t.date;
-                    document.getElementById('comment').value = t.comment;
-                    document.getElementById('notify').checked = t.notify;
+                    editarId.value = tarefa.id;
+                    document.getElementById('title').value = tarefa.title;
+                    document.getElementById('date').value = tarefa.date;
+                    document.getElementById('comment').value = tarefa.comment;
+                    document.getElementById('notify').checked = tarefa.notify;
+                    document.getElementById('priority').value = tarefa.priority;
                     btnForm.textContent = 'Salvar Alterações';
-                    btnCancelar.style.display = 'inline-block';
                 }
                 );
 
