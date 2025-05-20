@@ -13,26 +13,26 @@
     <div class="container my-5">
         <h1 class="mb-4 display-5 text-center text-primary"> Lista de Tarefas </h1>
 
-        <form id="task-form" class="row g-3 mb-4">
+        <form id="task-form" class="row g-3 mb-4 p-4 rounded-3 bg-white shadow-sm">
             <input type="hidden" id="edit-id">
             <div class="col-md-6">
-                <label for="title" class="form-label">Título</label>
-                <input type="text" id="title" class="form-control" placeholder="Ex: Ir ao mercado">
+                <label for="title" class="form-label fw-semibold">Título</label>
+                <input type="text" id="title" class="form-control border-primary" placeholder="Ex: Ir ao mercado">
             </div>
 
             <div class="col-md-4">
                 <label for="date" class="form-label"> Data da tarefa </label>
-                <input type="date" id="date" class="form-control">
+                <input type="date" id="date" class="form-control border-primary">
             </div>
 
             <div class="col-md-6">
                 <label for="comment" class="form-label"> Comentário </label>
-                <textarea id="comment" class="form-control" rows="2"></textarea>
+                <textarea id="comment" class="form-control border-primary" rows="2"></textarea>
             </div>
             
             <div class="col-md-3">
-                <label for="priority" class="form-label"> Prioridade </label>
-                <select id="priority" class="form-select">
+                <label for="priority" class="form-label fw-semibold"> Prioridade </label>
+                <select id="priority" class="form-select border-primary">
                     <option value="alta"> Alta </option>
                     <option value="media"> Média </option>
                     <option value="baixa"> Baixa </option>
@@ -41,21 +41,21 @@
 
             <div class="col-md-3 d-flex align-items-end">
                 <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="notify">
-                    <label class="form-check-label" for="notify"> Notificação </label>
+                    <input class="form-check-input border-secondary" type="checkbox" id="notify">
+                    <label class="form-check-label text-secondary" for="notify"> Notificação </label>
                 </div>
             </div>
 
-            <div class="col-12">
+            <div class="col-12 text-end">
                 <button type="submit" class="btn btn-primary" id="form-btn"> Adicionar Tarefa </button>
-                <button type="reset" class="btn btn-secondary" id="cancel-edit"> Cancelar </button>
+                <button type="reset" class="btn btn-outline-secondary" id="cancel-edit"> Cancelar </button>
             </div>
         </form>
 
         <div class="row mb-4">
             <div class="col-md-4">
-                <label for="sort-tasks" class="form-label"> Ordenar Por </label>
-                <select id="sort-tasks" class="form-select">
+                <label for="sort-tasks" class="form-label fw-semibold"> Ordenar Por </label>
+                <select id="sort-tasks" class="form-select border-primary">
                     <option value="createdDesc"> Data criação ↓ </option>
                     <option value="createdAsc"> Data de criação ↑ </option>
                     <option value="dueDesc"> Data tarefa ↓ </option>
@@ -66,7 +66,7 @@
             </div>
         </div>
 
-        <div id="task-list" class="mt-5">
+        <div id="task-list" class="row gy-3">
             <p id="empty-message" class="text-muted"> Não há tarefas cadastradas </p>
         </div>
 
