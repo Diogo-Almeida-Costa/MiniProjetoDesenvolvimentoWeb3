@@ -10,8 +10,32 @@ document.addEventListener('DOMContentLoaded',
         const btnCancelar = document.getElementById('cancel-edit');
         const editarId = document.getElementById('edit-id');
 
-        const salvo = localStorage.getItem('tarefas');
-        tarefas = salvo ? JSON.parse(salvo) : [];
+        let dadosSessao = localStorage.getItem('tarefas');
+        if(dadosSessao)
+        {
+            try
+            {
+                tarefas = JSON.parse(dadosSessao);
+
+                tarefas = tarefas.map(t => (
+                    {
+                        id: t.id,
+                        created: t.created || new Date().toISOString(),
+                        title: t.title || t,
+                        date: t.date || '',
+                        comment: t.comment || '',
+                        priority: t.priority || 'baixa',
+                        notify: !!t.notify
+                    }
+                ));
+                console.log('Caiu no try');
+            } catch(e)
+            {
+                console.log('caiu no catch');
+                tarefas = [];
+            }
+        }
+        localStorage.setItem('tarefas', JSON.stringify(tarefas));
 
         carregarTarefas();
 
@@ -126,6 +150,7 @@ document.addEventListener('DOMContentLoaded',
                 btnDetalhe.addEventListener('click', () => 
                 {
                     window.location.href = `detalhe.html?id=${tarefa.id}`;
+                    console.log("ID da URL:", `${tarefa.id}`);                    
                 });
                 const btnEdicao = document.createElement('button');
                 btnEdicao.className = 'btn btn-outline-warning btn-sm';

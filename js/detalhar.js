@@ -3,8 +3,12 @@ document.addEventListener('DOMContentLoaded', () =>
     const parametros = new URLSearchParams(location.search);
     const id = parametros.get('id');
     const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
-    const tarefa = tarefas.find(t => t.id.toString() === id);
+    const tarefa = tarefas.find(t => String(t.id) === id);
     const detalhar = document.querySelector('#task-detail .card-body');
+
+    console.log("ID da URL:", id);
+    console.log("Tarefa carregadas:", tarefa);
+
 
     if(tarefa)
     {
