@@ -1,4 +1,4 @@
-import { Tarefa } from '../model/Tarefa';
+import { Tarefa } from '../model/Tarefa.js';
 
 const FIREBASE_BASE_URL = "https://tarefa-desenvolvimento-web-default-rtdb.firebaseio.com/tarefas.json";
 
@@ -72,9 +72,9 @@ export class TarefaService
         }
     }
 
-    async updateTarefa(tarefaId, dadoAlterado)
+    async atualizarTarefa(tarefaId, dadoAlterado)
     {
-        const url = `https://tarefa-desenvolvimento-web-default-rtdb.firebaseio.com/tarefas/tarefas/${tarefaId}.json`;
+        const url = `https://tarefa-desenvolvimento-web-default-rtdb.firebaseio.com/tarefas/${tarefaId}.json`;
 
         try
         {

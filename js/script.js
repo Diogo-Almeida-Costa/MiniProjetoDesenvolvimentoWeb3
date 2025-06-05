@@ -1,16 +1,18 @@
+import { TarefaService } from './service/TarefaService.js';
+
 document.addEventListener('DOMContentLoaded', 
     () => 
     {
         const form = document.getElementById('task-form');
         const listarElementos = document.getElementById('task-list');
         const mensagemVazia = document.getElementById('empty-message');
-        let tarefas = [];
+        //let tarefas = [];
         const filtros = document.getElementById('sort-tasks');
         const btnForm = document.getElementById('form-btn');
         const btnCancelar = document.getElementById('cancel-edit');
         const editarId = document.getElementById('edit-id');
 
-        let dadosSessao = localStorage.getItem('tarefas');
+        /*let dadosSessao = localStorage.getItem('tarefas');
         if(dadosSessao)
         {
             try
@@ -35,21 +37,23 @@ document.addEventListener('DOMContentLoaded',
                 tarefas = [];
             }
         }
-        localStorage.setItem('tarefas', JSON.stringify(tarefas));
+        localStorage.setItem('tarefas', JSON.stringify(tarefas));*/
+
+        const tarefaService = new TarefaService();
 
         carregarTarefas();
 
         form.addEventListener('submit',
-            (e) =>
+            async (e) =>
             {
                 e.preventDefault();
 
                 const idEdit = editarId.value;
-                const idNum = idEdit ? Number(idEdit) : Date.now();
-                const dataCriada = idEdit ? tarefas.find(t => t.id === idNum).created : new Date().toISOString();
+                /*const idNum = idEdit ? Number(idEdit) : Date.now();*/
+                const dataCriada = new Date().toISOString();
 
                 const tarefa = {
-                    id: idNum,
+                    
                     title: document.getElementById('title').value.trim(),
                     date: document.getElementById('date').value,
                     comment: document.getElementById('comment').value.trim(),
@@ -59,19 +63,34 @@ document.addEventListener('DOMContentLoaded',
                 };
 
 
-                if(idEdit)
+                try
                 {
-                    tarefas = tarefas.map(t => t.id === idNum ? tarefa : t);
-                }
-                else
-                {
-                    tarefas.push(tarefa);
-                }
+                    if(idEdit)
+                    {
+                        const tarefasAtuais = await tarefaService.tarefasFetch();
+                        const tarefaOriginal = tarefasAtuais.find(t => t.id === idEdit);
 
-                localStorage.setItem('tarefas', JSON.stringify(tarefas));
+                        if(tarefaOriginal)
+                        {
+                            tarefa.created = tarefaOriginal.created;
+                        }
+                        await tarefaService.atualizarTarefa(idEdit, tarefa);
+                        alert("Tarefa Atualizada");
+                    }
+                    else
+                    {
+                        await tarefaService.addTarefa(tarefa);
+                        alert("Tarefa Adicionada");
+                    }
+                }
+                catch(error)
+                {
+                    console.error("Erro para salvar ou atualizar tarefa", error);
+                    alert("Erro para salvar ou atualizar");
+                }
 
                 resetarForm();
-                carregarTarefas();
+                await carregarTarefas();
             }
         );
 
@@ -89,9 +108,22 @@ document.addEventListener('DOMContentLoaded',
             btnForm.textContent = 'Adicionar Tarefa';
         }
 
-        function carregarTarefas()
+        async function carregarTarefas()
         {
             listarElementos.innerHTML = '';
+
+            let tarefas = [];
+
+            try
+            {
+                tarefas = await tarefaService.tarefasFetch();
+            }
+            catch(error)
+            {
+                console.error("Erro ao carregar tarefas do Firebase:", error);
+                mensagemVazia.textContent = "Erro ao carregar tarefas.";
+                mensagemVazia.style.display = 'block';
+            }
 
             const ordenado = [...tarefas];
 
@@ -105,7 +137,7 @@ document.addEventListener('DOMContentLoaded',
                     case 'createdDesc': return new Date(b.created) - new Date(a.created);
                     case 'dueAsc': return (a.date ? new Date(a.date) : 0) - (b.date ? new Date(b.date) : 0);
                     case 'dueDesc': return (b.date ? new Date(b.date) : 0) - (a.date ? new Date(a.date) : 0);
-                    case 'priority': return a.priority.localeCompare(b.priority);
+                    case 'priority': const ordemPrioridade = {'alta': 3, 'media': 2, 'baixa': 1}; return ordemPrioridade[b.priority] - ordemPrioridade[a.priority];
                     case 'alpha': return a.title.localeCompare(b.title);
                     default: return 0;
                 }
@@ -114,6 +146,7 @@ document.addEventListener('DOMContentLoaded',
 
             if(ordenado.length === 0)
             {
+                 mensagemVazia.textContent = 'Não há tarefas cadastradas';
                 mensagemVazia.style.display = 'block';
                 return;
             }
@@ -141,9 +174,9 @@ document.addEventListener('DOMContentLoaded',
                 const btnDiv = document.createElement('div');
                 btnDiv.className = 'd-flex flex-column gap-2';
                 const btnDelete = document.createElement('button');
-                btnDelete.className = 'btn btn-outline-danget btn-sm';
+                btnDelete.className = 'btn btn-outline-danger btn-sm';
                 btnDelete.textContent = 'Remover';
-                btnDelete.addEventListener('click', () => removerTarefa(tarefa.id));
+                btnDelete.addEventListener('click', async () => await removerTarefa(tarefa.id));
                 const btnDetalhe = document.createElement('button');
                 btnDetalhe.className = 'btn btn-outline-secondary btn-sm';
                 btnDetalhe.textContent = 'Detalhar';
@@ -179,11 +212,19 @@ document.addEventListener('DOMContentLoaded',
             );
         }
 
-        function removerTarefa(id)
+        async function removerTarefa(id)
         {
-            tarefas = tarefas.filter(t => t.id !== id);
-            localStorage.setItem('tarefas', JSON.stringify(tarefas));
-            carregarTarefas();
+            try
+            {
+                await tarefaService.deletarTarefa(id);
+                alert("Tarefa removida");
+                await carregarTarefas();
+            }
+            catch(error)
+            {
+                console.error("Erro para remover tarefa", error);
+                alert("Erro ao remover a tarefa. Verifique o console.");
+            }
         }
     }
 );

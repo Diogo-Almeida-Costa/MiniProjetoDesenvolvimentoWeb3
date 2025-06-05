@@ -1,13 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => 
+import { TarefaService } from './service/TarefaService.js';
+
+document.addEventListener('DOMContentLoaded', async () => 
 {
     const parametros = new URLSearchParams(location.search);
     const id = parametros.get('id');
-    const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
-    const tarefa = tarefas.find(t => String(t.id) === id);
+    /*const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+    const tarefa = tarefas.find(t => String(t.id) === id);*/
     const detalhar = document.querySelector('#task-detail .card-body');
+    const tarefaService = new TarefaService();
+    let tarefa = null;
 
-    console.log("ID da URL:", id);
-    console.log("Tarefa carregadas:", tarefa);
+
+    try
+    {
+        const tarefasFirebase = await tarefaService.tarefasFetch();
+        tarefa = tarefasFirebase.find(t => t.id === id);
+    }
+    catch(error)
+    {
+        console.error("Erro para buscar detalhes:", error);
+        detalhar.innerHTML = '<p class="text-danger"> Erro ao carregar detalhes da tarefa. </p>';
+        return;
+    }
 
 
     if(tarefa)
